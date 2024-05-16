@@ -8,15 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
         <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.39.1" />
-        <PackageReference Include="FluentValidation" Version="10.4.0" />
         <PackageReference Include="DnsClient" Version="1.7.0" />
     </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Views\Poc\Id.cshtml" />
-      <_ContentIncludedByDefault Remove="Views\Poc\Index.cshtml" />
-    </ItemGroup>
-
 </Project>
