@@ -1,0 +1,64 @@
+﻿@using Scanner.Models
+@model Scanner.Models.Report
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<h1>Report @Model.Id for domain @Model.DomainName</h1>
+
+<dl>
+    <dt>Requested at</dt>
+    <dd>@Model.RequestedAt.ToString("yyyy-MM-dd")</dd>
+
+    @if (Model.Status is ReportStatus.Completed or ReportStatus.Failed)
+    {
+        <dt>Scanned at</dt>
+        <dd>@Model.CompletedAt?.ToString("yyyy-MM-dd")</dd>
+    }
+
+    <dt>Status</dt>
+    <dd>@Model.Status</dd>
+
+    @if (Model.Status == ReportStatus.Failed)
+    {
+        <dt>Error</dt>
+        <dd>@Model.Error</dd>
+    }
+
+    @if (Model.Status == ReportStatus.Completed)
+    {
+        <dt>@Model.NameServers.Length Name servers</dt>
+        <dd>
+            <ul>
+                @foreach (var ns in Model.NameServers)
+                {
+                    <li>@ns</li>
+                }
+            </ul>
+        </dd>
+        
+        <dt>@Model.ApexText.Length Text records</dt>
+        <dd>
+            <ul>
+                @foreach (var text in Model.ApexText)
+                {
+                    <li>@text</li>
+                }
+            </ul>
+        </dd>
+
+        <dt>@Model.ApexAddresses.Length Addresses</dt>
+        <dd>
+            <ul>
+                @foreach (var address in Model.ApexAddresses)
+                {
+                    <li>
+                        @address.Value (@address.ReverseName)<br>
+                        @address.Asn - @address.OrgName<br>
+                        @address.City (@address.Region, @address.Country)
+                    </li>
+                }
+            </ul>
+        </dd>
+    }
+</dl>
