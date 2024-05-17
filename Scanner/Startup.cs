@@ -1,5 +1,4 @@
-﻿using Azure;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
 using Scanner.Models;
 
 namespace Scanner;
@@ -34,11 +33,11 @@ public static class Startup
     }
 }
 
-internal class CosmosOptions
+public class CosmosOptions
 {
-    internal const string Cosmos = "Cosmos";
+    public const string Cosmos = "Cosmos";
 
-    internal string Endpoint { get; set; } = string.Empty;
-    internal string Key { get; set; } = string.Empty;
-    internal string DatabaseName { get; set; } = AppConstants.DefaultDatabaseName;
+    public string Endpoint { get; set; } = string.Empty;
+    public string Key { get; set; } = string.Empty;
+    public string DatabaseName { get; set; } = AppConstants.DefaultDatabaseName;
 }
