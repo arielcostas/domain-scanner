@@ -4,3 +4,16 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/.idea/
 .idea/
+
+# OpenTofu specific - Sourced from https://github.com/github/gitignore/blob/main/Terraform.gitignore
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
