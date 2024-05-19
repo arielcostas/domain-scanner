@@ -1,11 +1,11 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Scanner.Models;
-using Scanner.Reports.Fetchers;
-using IpinfoFetcher = Scanner.Reports.Fetchers.IpinfoFetcher;
+using Scanner.Service;
+using NameServer = Scanner.Reports.Types.NameServer;
 
 namespace Scanner.Reports;
 
-public class ReportProcessor(Database database) : BackgroundService
+public class ReportProcessor(Database database, DnsService dns, IpinfoService ipinfo) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -37,16 +37,19 @@ public class ReportProcessor(Database database) : BackgroundService
         report.Status = ReportStatus.Processing;
         await database.GetContainer(AppConstants.ReportsContainer).ReplaceItemAsync(report, report.Id);
 
-        DnsFetcher dnsFetcher = new();
-        IpinfoFetcher ipinfoFetcher = new();
-
         try
         {
-            report.NameServers = dnsFetcher.GetNameServers(report.DomainName);
-            report.ApexAddresses = dnsFetcher.GetApexAddresses(report.DomainName)
-                .Select(addr => ipinfoFetcher.GetIpInfo(addr).Result).ToArray();
+            report.NameServers = dns.GetNameServers(report.DomainName)
+                .Select(addr => new NameServer
+                {
+                    Hostname = addr,
+                    Service = NameserverLookupService.GetService(addr)
+                }).ToArray();
 
-            report.ApexText = dnsFetcher.GetApexTextRecords(report.DomainName);
+            var apex = dns.GetApexAddresses(report.DomainName);
+            report.ApexAddresses = apex.Select(addr => ipinfo.GetIpInfo(addr).Result).ToArray();
+
+            report.ApexText = dns.GetApexTextRecords(report.DomainName);
             report.Status = ReportStatus.Completed;
         }
         catch (Exception e)
@@ -58,8 +61,7 @@ public class ReportProcessor(Database database) : BackgroundService
         {
             // When the report was finalized, either successfully or not
             report.CompletedAt = DateTime.UtcNow;
+            await database.GetContainer(AppConstants.ReportsContainer).ReplaceItemAsync(report, report.Id);
         }
-
-        await database.GetContainer(AppConstants.ReportsContainer).ReplaceItemAsync(report, report.Id);
     }
 }

@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Scanner.Service
+@model Scanner.ViewModels.ListReportsViewModel
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<h1>Latest scans</h1>
+
+@if (Model.Reports.Count == 0)
+{
+    <p>No reports found</p>
+}
+else
+{
+    <table>
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Domain</th>
+            <th>Request date</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        @foreach (ListReportsItem item in Model.Reports)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Report" asp-action="Details" asp-route-domain="@item.DomainName" asp-route-id="@item.Id">
+                        @item.Id
+                    </a>
+                </td>
+                <td>
+                    <a asp-controller="Report" asp-action="ListBydomain" asp-route-domain="@item.DomainName">
+                        @item.DomainName
+                    </a>
+                </td>
+                <td>@item.RequestedAt.ToString("yyyy-MM-dd")</td>
+                <td>@item.Status</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<h2>Create a new report</h2>
+
+<form asp-controller="Report" asp-action="Create">
+    <label for="domain">Domain:</label>
+    <input type="text" id="domain" name="domain" required>
+    <button type="submit">Create</button>
+</form>

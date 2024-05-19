@@ -10,7 +10,7 @@ public class Report
     public required string DomainName { get; set; }
     public string? Error { get; set; }
 
-    public string[] NameServers { get; set; } = [];
+    public NameServer[] NameServers { get; set; } = [];
     public Address[] ApexAddresses { get; set; } = [];
     public string[] ApexText { get; set; } = [];
     

@@ -1,10 +1,15 @@
 using Scanner;
 using Scanner.Reports;
+using Scanner.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<IpinfoService>();
+builder.Services.AddSingleton<DnsService>();
+builder.Services.AddSingleton<IReportService, CosmosReportService>();
+
 await builder.SetupCosmosDb();
 
 builder.Services.AddHostedService<ReportProcessor>();
@@ -14,6 +19,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseStaticFiles();
 
-app.MapControllerRoute("default", "{controller=Report}/{action=List}/{id?}");
+app.MapControllers();
 
 app.Run();

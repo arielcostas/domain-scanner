@@ -1,64 +1,45 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos;
-using Scanner.Models;
-using Scanner.Reports.Fetchers;
+using Scanner.Service;
+using Scanner.ViewModels;
 
 namespace Scanner.Controllers;
 
 [Controller]
+[Route("reports")]
 public class ReportController : Controller
 {
-    private readonly DnsFetcher _dnsFetcher;
-    private readonly Database _database;
+    private readonly IReportService _reportService;
 
-    public ReportController(Database database)
+    public ReportController(IReportService reportService)
     {
-        _database = database;
-        _dnsFetcher = new DnsFetcher();
+        _reportService = reportService;
     }
 
     [HttpGet("")]
-    public IActionResult List()
+    public IActionResult ListRecent()
     {
-        var container = _database.GetContainer(AppConstants.ReportsContainer);
-        using var iterator = container.GetItemQueryIterator<Report>(
-            queryText: "SELECT * FROM c",
-            requestOptions: new QueryRequestOptions { MaxItemCount = 100 }
-        );
-        
-        var reports = new List<ListReportsItem>();
-        while (iterator.HasMoreResults)
-        {
-            var response = iterator.ReadNextAsync().Result;
-            reports.AddRange(response.Resource.Select(r => new ListReportsItem(
-                r.Id,
-                r.DomainName,
-                r.RequestedAt,
-                r.Status
-            )));
-        }
-
-        return View(reports);
+        var reports = _reportService.ListAllReports(10, 0);
+        return View(new ListReportsViewModel { Reports = reports });
     }
-    
+
+    [HttpGet("{domain}")]
+    public IActionResult ListBydomain(string domain)
+    {
+        var reports = _reportService.ListReportsByDomain(domain, 10, 0);
+        return View(new ListReportsBydomainViewModel { Reports = reports, Domain = domain });
+    }
+
     [HttpGet("{domain}/{id}")]
-    public async Task<IActionResult> Details(string domain, string id)
+    public IActionResult Details(string domain, string id)
     {
-        var container = _database.GetContainer(AppConstants.ReportsContainer);
-        var report = await container.ReadItemAsync<Report>(id, new PartitionKey(domain));
-        
-        return View(report.Resource);
-    }
-    
-    [HttpPost("")]
-    public async Task<IActionResult> Create(string domain)
-    {
-        var report = new Report { DomainName = domain };
-        
-        var container = _database.GetContainer(AppConstants.ReportsContainer);
-        await container.CreateItemAsync(report, new PartitionKey(domain));
-        return RedirectToAction("List");
+        var report = _reportService.GetReport(domain, id);
+        return View(new ReportDetailsViewModel { Report = report });
     }
 
-    public record ListReportsItem(string Id, string DomainName, DateTime RequestedAt, ReportStatus Status);
+    [HttpPost("")]
+    public IActionResult Create(string domain)
+    {
+        _reportService.CreateReport(domain);
+        return RedirectToAction("ListBydomain", new { domain });
+    }
 }

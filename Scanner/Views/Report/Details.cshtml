@@ -1,64 +1,63 @@
 ﻿@using Scanner.Models
-@model Scanner.Models.Report
+@model Scanner.ViewModels.ReportDetailsViewModel
 @{
     ViewData["Title"] = "Inicio";
 }
 
-<h1>Report @Model.Id for domain @Model.DomainName</h1>
+<h1>Report @Model.Report.Id for domain @Model.Report.DomainName</h1>
 
+<h2>Details</h2>
 <dl>
     <dt>Requested at</dt>
-    <dd>@Model.RequestedAt.ToString("yyyy-MM-dd")</dd>
+    <dd>@Model.Report.RequestedAt.ToString("yyyy-MM-dd")</dd>
 
-    @if (Model.Status is ReportStatus.Completed or ReportStatus.Failed)
+    @if (Model.Report.Status is ReportStatus.Completed or ReportStatus.Failed)
     {
         <dt>Scanned at</dt>
-        <dd>@Model.CompletedAt?.ToString("yyyy-MM-dd")</dd>
+        <dd>@Model.Report.CompletedAt?.ToString("yyyy-MM-dd")</dd>
     }
 
     <dt>Status</dt>
-    <dd>@Model.Status</dd>
+    <dd>@Model.Report.Status</dd>
 
-    @if (Model.Status == ReportStatus.Failed)
+    @if (Model.Report.Status == ReportStatus.Failed)
     {
         <dt>Error</dt>
-        <dd>@Model.Error</dd>
-    }
-
-    @if (Model.Status == ReportStatus.Completed)
-    {
-        <dt>@Model.NameServers.Length Name servers</dt>
-        <dd>
-            <ul>
-                @foreach (var ns in Model.NameServers)
-                {
-                    <li>@ns</li>
-                }
-            </ul>
-        </dd>
-        
-        <dt>@Model.ApexText.Length Text records</dt>
-        <dd>
-            <ul>
-                @foreach (var text in Model.ApexText)
-                {
-                    <li>@text</li>
-                }
-            </ul>
-        </dd>
-
-        <dt>@Model.ApexAddresses.Length Addresses</dt>
-        <dd>
-            <ul>
-                @foreach (var address in Model.ApexAddresses)
-                {
-                    <li>
-                        @address.Value (@address.ReverseName)<br>
-                        @address.Asn - @address.OrgName<br>
-                        @address.City (@address.Region, @address.Country)
-                    </li>
-                }
-            </ul>
-        </dd>
+        <dd>@Model.Report.Error</dd>
     }
 </dl>
+
+@if (Model.Report.Status == ReportStatus.Completed)
+{
+    <h2>@Model.Report.NameServers.Length Name servers</h2>
+    <ul>
+        @foreach (var ns in Model.Report.NameServers)
+        {
+            <li>
+                @ns.Hostname<br>
+                @ns.Service.ToString()
+            </li>
+        }
+    </ul>
+
+    <h2>@Model.Report.ApexAddresses.Length Addresses</h2>
+
+    <ul>
+        @foreach (var address in Model.Report.ApexAddresses)
+        {
+            <li>
+                @address.Value (@address.ReverseName)<br>
+                @address.Asn - @address.OrgName<br>
+                @address.City (@address.Region, @address.Country)
+            </li>
+        }
+    </ul>
+
+    <h2>@Model.Report.ApexText.Length Text records</h2>
+    <ul>
+        @foreach (var text in Model.Report.ApexText)
+        {
+            <li>@text</li>
+        }
+    </ul>
+}
