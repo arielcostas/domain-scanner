@@ -8,14 +8,13 @@ param location string = 'francecentral'
 @description('App Service Plan SKU')
 param sku string = 'B2'
 
-@description('Linux FX Version')
-param linuxFxVersion string = 'DOTNETCORE|8.0'
-
 @description('Repository URL')
 param repositoryUrl string = 'https://github.com/arielcostas/domain-scanner.git'
 
 @description('Repository branch')
 param repositoryBranch string = 'main'
+
+var linuxFxVersion = 'DOTNETCORE|8.0'
 
 var cosmosAccountName = toLower(applicationName)
 var websiteName = applicationName
