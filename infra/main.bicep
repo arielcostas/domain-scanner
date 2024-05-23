@@ -1,12 +1,12 @@
 @description('Application name')
-param applicationName string = 'domainscanner-${uniqueString(resourceGroup().id)}'
+param applicationName string = 'domainscanner-${substring(uniqueString(resourceGroup().id), 0, 5)}'
 
 @description('Location')
 param location string = 'francecentral'
 
 @allowed(['F1', 'B1', 'B2', 'B3'])
 @description('App Service Plan SKU')
-param sku string = 'B1'
+param sku string = 'B2'
 
 @description('Linux FX Version')
 param linuxFxVersion string = 'DOTNETCORE|8.0'
@@ -39,7 +39,7 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-11-15' = {
     databaseAccountOfferType: 'Standard'
     enableFreeTier: false
     enableAnalyticalStorage: false
-    isVirtualNetworkFilterEnabled: true
+    isVirtualNetworkFilterEnabled: false
     capabilities: [
       { name: 'EnableServerless' }
     ]
@@ -57,6 +57,13 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
     name: sku
   }
   kind: 'linux'
+}
+
+resource rgLock 'Microsoft.Authorization/locks@2016-09-01' = {
+  name: 'Lock'
+  properties: {
+    level: 'CanNotDelete'
+  }
 }
 
 resource website 'Microsoft.Web/sites@2023-12-01' = {
