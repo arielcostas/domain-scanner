@@ -15,7 +15,8 @@ public static partial class NameserverLookupService
             new(".dondominio.com.", NameserverService.DonDominio),
             new(".dinahosting.com.", NameserverService.DinaHosting),
             new(".ns.cloudflare.com.", NameserverService.Cloudflare),
-            new(".nsone.net", NameserverService.IbmNsone)
+            new(".nsone.net", NameserverService.IbmNsone),
+            new(".akam.net", NameserverService.Akamai),
         };
 
         PatternMappings = new List<PatternNameserverMapping>

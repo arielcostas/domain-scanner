@@ -14,5 +14,6 @@ public enum NameserverService : uint
     Azure = 3,
     DinaHosting = 4,
     Ionos = 5,
-    IbmNsone = 6
+    IbmNsone = 6,
+    Akamai = 7
 }
