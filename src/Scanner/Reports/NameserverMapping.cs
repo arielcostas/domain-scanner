@@ -10,20 +10,18 @@ public static partial class NameserverLookupService
 
     static NameserverLookupService()
     {
-        EndwithMappings = new List<EndwithNameserverMapping>
-        {
+        EndwithMappings = [
             new(".dondominio.com.", NameserverService.DonDominio),
             new(".dinahosting.com.", NameserverService.DinaHosting),
             new(".ns.cloudflare.com.", NameserverService.Cloudflare),
             new(".nsone.net", NameserverService.IbmNsone),
             new(".akam.net", NameserverService.Akamai),
-        };
+        ];
 
-        PatternMappings = new List<PatternNameserverMapping>
-        {
+        PatternMappings = [
             new(AzureDnsRegex(), NameserverService.Azure),
             new(IonosRegex(), NameserverService.Ionos)
-        };
+        ];
     }
 
     public static NameserverService GetService(string nameserver)
