@@ -5,7 +5,7 @@ using NameServer = Scanner.Reports.Types.NameServer;
 
 namespace Scanner.Reports;
 
-public class ReportProcessor(Database database, DnsService dns, IpinfoService ipinfo) : BackgroundService
+public class ReportProcessor(Database database, DnsService dns, IpinfoService ipinfo, ILogger<ReportProcessor> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -34,11 +34,14 @@ public class ReportProcessor(Database database, DnsService dns, IpinfoService ip
 
     private async Task ProcessReport(Report report)
     {
+        logger.LogInformation("{ReportId} Processing report", report.Id);
         report.Status = ReportStatus.Processing;
         await database.GetContainer(AppConstants.ReportsContainer).ReplaceItemAsync(report, report.Id);
+        logger.LogInformation("{ReportId} report updated to processing", report.Id);
 
         try
         {
+            logger.LogInformation("{ReportId} getting nameservers and apex addresses for {DomainName}", report.Id, report.DomainName);
             report.NameServers = dns.GetNameServers(report.DomainName)
                 .Select(addr => new NameServer
                 {
@@ -51,11 +54,13 @@ public class ReportProcessor(Database database, DnsService dns, IpinfoService ip
 
             report.ApexText = dns.GetApexTextRecords(report.DomainName);
             report.Status = ReportStatus.Completed;
+            logger.LogInformation("{ReportId} report completed", report.Id);
         }
         catch (Exception e)
         {
             report.Status = ReportStatus.Failed;
             report.Error = e.Message;
+            logger.LogError(e, "{ReportId} error processing report", report.Id);
         }
         finally
         {

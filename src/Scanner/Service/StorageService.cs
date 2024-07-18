@@ -28,6 +28,14 @@ public class CosmosReportService : IReportService
         return GetReportsFromIterator(iterator);
     }
 
+    public int CountAllReports()
+    {
+        var container = _database.GetContainer(AppConstants.ReportsContainer);
+        var queryDefinition = new QueryDefinition("SELECT VALUE COUNT(1) FROM c");
+        var iterator = container.GetItemQueryIterator<int>(queryDefinition);
+        return iterator.ReadNextAsync().Result.Resource.First();
+    }
+
     public List<ListReportsItem> ListReportsByDomain(string domain, int limit = 10, int offset = 0)
     {
         var container = _database.GetContainer(AppConstants.ReportsContainer);
@@ -42,6 +50,17 @@ public class CosmosReportService : IReportService
         });
         
         return GetReportsFromIterator(iterator);
+    }
+
+    public int CountReportsByDomain(string domain)
+    {
+        var container = _database.GetContainer(AppConstants.ReportsContainer);
+        var queryDefinition = new QueryDefinition("SELECT VALUE COUNT(1) FROM c");
+        var iterator = container.GetItemQueryIterator<int>(queryDefinition, requestOptions: new QueryRequestOptions
+        {
+            PartitionKey = new PartitionKey(domain)
+        });
+        return iterator.ReadNextAsync().Result.Resource.First();
     }
 
     private List<ListReportsItem> GetReportsFromIterator(FeedIterator<Report> iterator)
@@ -82,7 +101,9 @@ public class CosmosReportService : IReportService
 public interface IReportService
 {
     List<ListReportsItem> ListAllReports(int limit, int offset);
+    int CountAllReports();
     List<ListReportsItem> ListReportsByDomain(string domain, int limit, int offset);
+    int CountReportsByDomain(string domain);
     Report GetReport(string domain, string id);
     void CreateReport(string domain);
 }

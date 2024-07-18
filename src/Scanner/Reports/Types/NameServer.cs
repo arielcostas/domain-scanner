@@ -1,9 +1,12 @@
-﻿namespace Scanner.Reports.Types;
+﻿using System.Text.Json.Serialization;
+
+namespace Scanner.Reports.Types;
 
 public class NameServer
 {
     public required string Hostname { get; set; }
     public required NameserverService Service { get; set; }
+    public string ServiceName => Service.ToString();
 }
 
 public enum NameserverService : uint

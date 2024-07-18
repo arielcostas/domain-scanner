@@ -1,9 +1,9 @@
-﻿import {ReportStatus} from "./summarisedReport.ts";
+﻿import {ReportStatus} from "./report.ts";
 
 export interface SummarisedReport {
-    Id: string;
-    DomainName: string;
-    RequestedAt: Date;
-    Status: ReportStatus;
+    id: string;
+    domainName: string;
+    requestedAt: string;
+    status: ReportStatus;
 }
 

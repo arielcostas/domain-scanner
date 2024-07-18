@@ -1,18 +1,17 @@
-import {Component, ReactElement, useEffect, useState} from 'react';
-import './App.css';
-import {BrowserRouter, Route, Router, Routes} from "react-router-dom";
+import {ReactElement} from 'react';
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {Home} from "./pages/Home.tsx";
-import {Dos} from "./pages/Dos.tsx";
-import {StaticRouter} from "react-router-dom/server";
-import {ListReportsViewModel} from "./data/viewModels.ts";
-import {SummarisedReport} from "./data/data.ts";
+import 'simpledotcss/simple.min.css';
+import { Domain } from './pages/Domain.tsx';
+import { Report } from './pages/Report.tsx';
 
 function App(): ReactElement {
     return (
         <BrowserRouter>
             <Routes>
-                <Route exact path="/" element={<Home/>}/>
-                <Route exact path="/dos" element={<Dos/>}/>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/:domain" element={<Domain />}/>
+                <Route path="/:domain/:reportId" element={<Report />}/>
             </Routes>
         </BrowserRouter>
     );
